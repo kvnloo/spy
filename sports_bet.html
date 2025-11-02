@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BET ARENA - AI Sports Betting Portfolio Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            font-family: 'Space Mono', monospace !important;
+        }
+        body {
+            letter-spacing: 0em;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-[#F5F1E8] min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b-2 border-black sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-[#FFE600] border-2 border-black flex items-center justify-center">
+                        <span class="text-xl font-bold">🎲</span>
+                    </div>
+                    <h1 class="text-xl font-bold tracking-tight">BET ARENA</h1>
+                </div>
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="#" onclick="showView('live'); return false;" class="text-sm font-bold hover:text-[#4DA6FF] transition-colors">LIVE BETS</a>
+                    <a href="#" onclick="showView('leaderboard'); return false;" class="text-sm font-bold hover:text-[#4DA6FF] transition-colors">LEADERBOARD</a>
+                    <a href="#" onclick="showView('parlay'); return false;" class="text-sm font-bold hover:text-[#4DA6FF] transition-colors">PARLAY BUILDER</a>
+                    <div class="relative" onmouseenter="showSportsDropdown()" onmouseleave="hideSportsDropdown()">
+                        <a href="#" id="sportsButton" class="text-sm font-bold hover:text-[#4DA6FF] transition-colors">SPORTS</a>
+                        <!-- Sports Dropdown -->
+                        <div id="sportsDropdown" class="hidden absolute top-full left-0 mt-2 bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] w-64 z-50">
+                            <div class="p-2">
+                                <a href="#" class="flex items-center gap-3 p-3 hover:bg-[#F5F1E8] transition-colors border-b border-gray-200">
+                                    <div class="w-6 h-6 bg-[#10B981] border border-black flex items-center justify-center">
+                                        <span class="text-xs font-bold">🏈</span>
+                                    </div>
+                                    <span class="text-xs font-bold">NFL</span>
+                                </a>
+                                <a href="#" class="flex items-center gap-3 p-3 hover:bg-[#F5F1E8] transition-colors border-b border-gray-200">
+                                    <div class="w-6 h-6 bg-[#FF6B6B] border border-black flex items-center justify-center">
+                                        <span class="text-xs font-bold">🏀</span>
+                                    </div>
+                                    <span class="text-xs font-bold">NBA</span>
+                                </a>
+                                <a href="#" class="flex items-center gap-3 p-3 hover:bg-[#F5F1E8] transition-colors border-b border-gray-200">
+                                    <div class="w-6 h-6 bg-[#F59E0B] border border-black flex items-center justify-center">
+                                        <span class="text-xs font-bold">⚾</span>
+                                    </div>
+                                    <span class="text-xs font-bold">MLB</span>
+                                </a>
+                                <a href="#" class="flex items-center gap-3 p-3 hover:bg-[#F5F1E8] transition-colors border-b border-gray-200">
+                                    <div class="w-6 h-6 bg-[#4DA6FF] border border-black flex items-center justify-center">
+                                        <span class="text-xs font-bold">⚽</span>
+                                    </div>
+                                    <span class="text-xs font-bold">SOCCER</span>
+                                </a>
+                                <a href="#" class="flex items-center gap-3 p-3 hover:bg-[#F5F1E8] transition-colors">
+                                    <div class="w-6 h-6 bg-[#9B59B6] border border-black flex items-center justify-center">
+                                        <span class="text-xs font-bold">🏒</span>
+                                    </div>
+                                    <span class="text-xs font-bold">NHL</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                <button class="px-4 py-2 bg-[#4DA6FF] text-white font-bold border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all text-sm">
+                    PLACE BET
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- LIVE BETS VIEW -->
+    <main id="liveView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Portfolio Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Bankroll Card -->
+            <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-gray-600">TOTAL BANKROLL</span>
+                    <i data-lucide="trending-up" class="w-4 h-4 text-green-500" style="stroke-width: 2.5;"></i>
+                </div>
+                <div class="text-2xl font-bold mb-1">$24,850.00</div>
+                <div class="text-xs text-green-500 font-bold">+18.6% (7D)</div>
+            </div>
+
+            <!-- Active Bets Card -->
+            <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-gray-600">ACTIVE BETS</span>
+                    <i data-lucide="activity" class="w-4 h-4 text-[#4DA6FF]" style="stroke-width: 2.5;"></i>
+                </div>
+                <div class="text-2xl font-bold mb-1">23</div>
+                <div class="text-xs text-gray-600 font-bold">12 PARLAYS</div>
+            </div>
+
+            <!-- Win Rate Card -->
+            <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-gray-600">WIN RATE</span>
+                    <i data-lucide="target" class="w-4 h-4 text-[#FFE600]" style="stroke-width: 2.5;"></i>
+                </div>
+                <div class="text-2xl font-bold mb-1">64.2%</div>
+                <div class="text-xs text-green-500 font-bold">+3.2% VS AVG</div>
+            </div>
+
+            <!-- Biggest Win Card -->
+            <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-gray-600">BIGGEST WIN</span>
+                    <i data-lucide="trophy" class="w-4 h-4 text-[#FFE600]" style="stroke-width: 2.5;"></i>
+                </div>
+                <div class="text-lg font-bold mb-1">$12,450</div>
+                <div class="text-xs text-gray-600 font-bold">12-LEG PARLAY</div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)] mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold tracking-tight">BANKROLL HISTORY</h2>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-black text-white font-bold border-2 border-black text-xs">ALL</button>
+                    <button class="px-4 py-2 bg-white text-black font-bold border-2 border-black text-xs hover:bg-gray-100 transition-colors">7D</button>
+                    <button class="px-4 py-2 bg-white text-black font-bold border-2 border-black text-xs hover:bg-gray-100 transition-colors">30D</button>
+                    <button class="px-4 py-2 bg-white text-black font-bold border-2 border-black text-xs hover:bg-gray-100 transition-colors">90D</button>
+                </div>
+            </div>
+            <div style="position: relative; height: 400px;">
+                <canvas id="bankrollChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Featured 12-Leg Parlay -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold tracking-tight">LEGENDARY 12-LEG PARLAY</h2>
+                <div class="inline-block px-4 py-2 bg-[#FFE600] border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+                    <span class="text-xs font-bold uppercase tracking-wider">WON +$12,450</span>
+                </div>
+            </div>
+
+            <div class="bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] p-6">
+                <!-- Parlay Header -->
+                <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-200">
+                    <div>
+                        <div class="text-xs font-bold text-gray-600 mb-1">TOTAL ODDS</div>
+                        <div class="text-3xl font-bold text-[#4DA6FF]">+82500</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-gray-600 mb-1">WAGER</div>
+                        <div class="text-2xl font-bold">$15.00</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-gray-600 mb-1">TO WIN</div>
+                        <div class="text-2xl font-bold text-green-500">$12,390.00</div>
+                    </div>
+                </div>
+
+                <!-- Parlay Legs -->
+                <div class="space-y-3">
+                    <!-- Leg 1 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">1</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">CHIEFS -3.5</div>
+                                <div class="text-xs text-gray-600">vs Raiders • NFL</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-110</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 2 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">2</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">LAKERS ML</div>
+                                <div class="text-xs text-gray-600">vs Warriors • NBA</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">+145</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 3 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">3</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">OVER 225.5</div>
+                                <div class="text-xs text-gray-600">Celtics vs Heat • NBA</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-115</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 4 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">4</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">RAVENS +6.5</div>
+                                <div class="text-xs text-gray-600">vs 49ers • NFL</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-105</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 5 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">5</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">YANKEES ML</div>
+                                <div class="text-xs text-gray-600">vs Red Sox • MLB</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-130</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 6 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">6</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">UNDER 48.5</div>
+                                <div class="text-xs text-gray-600">Cowboys vs Eagles • NFL</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-110</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 7 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">7</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">NUGGETS -4.5</div>
+                                <div class="text-xs text-gray-600">vs Suns • NBA</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-108</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 8 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">8</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">REAL MADRID ML</div>
+                                <div class="text-xs text-gray-600">vs Barcelona • La Liga</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">+165</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 9 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">9</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">OVER 6.5</div>
+                                <div class="text-xs text-gray-600">Dodgers vs Padres • MLB</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-120</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 10 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">10</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">BILLS -7.5</div>
+                                <div class="text-xs text-gray-600">vs Dolphins • NFL</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-112</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 11 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">11</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">BRUINS ML</div>
+                                <div class="text-xs text-gray-600">vs Maple Leafs • NHL</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">+120</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+
+                    <!-- Leg 12 -->
+                    <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                                <span class="text-xs font-bold text-white">12</span>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">BUCKS +3.5</div>
+                                <div class="text-xs text-gray-600">vs 76ers • NBA</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm">-105</div>
+                            <div class="text-xs text-green-500 font-bold">✓ WON</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parlay Stats -->
+                <div class="mt-6 pt-6 border-t-2 border-gray-200 grid grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-xs font-bold text-gray-600 mb-1">PLACED</div>
+                        <div class="text-sm font-bold">OCT 15, 2025</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-600 mb-1">SETTLED</div>
+                        <div class="text-sm font-bold">OCT 18, 2025</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-600 mb-1">LEGS HIT</div>
+                        <div class="text-sm font-bold text-green-500">12/12</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-600 mb-1">PROFIT</div>
+                        <div class="text-sm font-bold text-green-500">+$12,375.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Bets Grid -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold tracking-tight mb-6">ACTIVE BETS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Active Bet 1 - Parlay -->
+                <div class="bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="inline-block px-3 py-1 bg-[#4DA6FF] text-white border-2 border-black">
+                                <span class="text-xs font-bold">5-LEG PARLAY</span>
+                            </div>
+                            <div class="w-3 h-3 bg-yellow-500 border-2 border-black"></div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-xl font-bold mb-1">+2450</div>
+                            <div class="text-xs font-bold text-gray-600">$50 TO WIN $1,275</div>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">LEGS HIT:</span>
+                                <span class="font-bold">3/5</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">STATUS:</span>
+                                <span class="font-bold text-yellow-500">PENDING</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">TIME LEFT:</span>
+                                <span class="font-bold">2H 15M</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 px-4 py-2 bg-[#F5F1E8] border-2 border-black font-bold text-xs hover:bg-gray-200 transition-colors">
+                            VIEW DETAILS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Bet 2 - Single -->
+                <div class="bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="inline-block px-3 py-1 bg-white border-2 border-black">
+                                <span class="text-xs font-bold">SINGLE BET</span>
+                            </div>
+                            <div class="w-3 h-3 bg-yellow-500 border-2 border-black"></div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-xl font-bold mb-1">CHIEFS -3.5</div>
+                            <div class="text-xs font-bold text-gray-600">$100 TO WIN $191</div>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">ODDS:</span>
+                                <span class="font-bold">-110</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">STATUS:</span>
+                                <span class="font-bold text-yellow-500">LIVE</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">SCORE:</span>
+                                <span class="font-bold">KC 21 - LV 14</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 px-4 py-2 bg-[#F5F1E8] border-2 border-black font-bold text-xs hover:bg-gray-200 transition-colors">
+                            CASH OUT $145
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Bet 3 - Parlay -->
+                <div class="bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="inline-block px-3 py-1 bg-[#FFE600] border-2 border-black">
+                                <span class="text-xs font-bold">3-LEG PARLAY</span>
+                            </div>
+                            <div class="w-3 h-3 bg-green-500 border-2 border-black"></div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="text-xl font-bold mb-1">+595</div>
+                            <div class="text-xs font-bold text-gray-600">$75 TO WIN $521</div>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">LEGS HIT:</span>
+                                <span class="font-bold text-green-500">3/3</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">STATUS:</span>
+                                <span class="font-bold text-green-500">WON</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">PAYOUT:</span>
+                                <span class="font-bold text-green-500">$521.25</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 px-4 py-2 bg-[#F5F1E8] border-2 border-black font-bold text-xs hover:bg-gray-200 transition-colors">
+                            VIEW DETAILS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sports Breakdown -->
+        <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)] mb-8">
+            <h2 class="text-xl font-bold tracking-tight mb-6">SPORT BREAKDOWN</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-2 text-xs">
+                                <span class="font-bold">NFL</span>
+                                <span class="font-bold">$8,420</span>
+                            </div>
+                            <div class="w-full h-8 bg-[#F5F1E8] border-2 border-black">
+                                <div class="h-full bg-[#10B981] border-r-2 border-black" style="width: 34%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2 text-xs">
+                                <span class="font-bold">NBA</span>
+                                <span class="font-bold">$7,250</span>
+                            </div>
+                            <div class="w-full h-8 bg-[#F5F1E8] border-2 border-black">
+                                <div class="h-full bg-[#FF6B6B] border-r-2 border-black" style="width: 29%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2 text-xs">
+                                <span class="font-bold">MLB</span>
+                                <span class="font-bold">$4,180</span>
+                            </div>
+                            <div class="w-full h-8 bg-[#F5F1E8] border-2 border-black">
+                                <div class="h-full bg-[#F59E0B] border-r-2 border-black" style="width: 17%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-2 text-xs">
+                                <span class="font-bold">SOCCER</span>
+                                <span class="font-bold">$3,000</span>
+                            </div>
+                            <div class="w-full h-8 bg-[#F5F1E8] border-2 border-black">
+                                <div class="h-full bg-[#4DA6FF] border-r-2 border-black" style="width: 12%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2 text-xs">
+                                <span class="font-bold">NHL</span>
+                                <span class="font-bold">$2,000</span>
+                            </div>
+                            <div class="w-full h-8 bg-[#F5F1E8] border-2 border-black">
+                                <div class="h-full bg-[#9B59B6] border-r-2 border-black" style="width: 8%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+            <h2 class="text-xl font-bold tracking-tight mb-6">RECENT ACTIVITY</h2>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center">
+                            <i data-lucide="check" class="w-4 h-4 text-white" style="stroke-width: 2.5;"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm">3-LEG PARLAY WON</div>
+                            <div class="text-xs text-gray-600">NBA • NFL • MLB</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-sm text-green-500">+$521</div>
+                        <div class="text-xs text-gray-600">15 MIN AGO</div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 bg-red-500 border-2 border-black flex items-center justify-center">
+                            <i data-lucide="x" class="w-4 h-4 text-white" style="stroke-width: 2.5;"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm">SINGLE BET LOST</div>
+                            <div class="text-xs text-gray-600">Lakers ML • NBA</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-sm text-red-500">-$150</div>
+                        <div class="text-xs text-gray-600">1 HR AGO</div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-[#F5F1E8] border-2 border-black">
+                    <div class="flex items-center gap-4">
+                        <div class="w-8 h-8 bg-[#4DA6FF] border-2 border-black flex items-center justify-center">
+                            <i data-lucide="plus" class="w-4 h-4 text-white" style="stroke-width: 2.5;"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm">5-LEG PARLAY PLACED</div>
+                            <div class="text-xs text-gray-600">NFL • NBA • NHL</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-sm">$50 WAGERED</div>
+                        <div class="text-xs text-gray-600">2 HR AGO</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LEADERBOARD VIEW -->
+    <main id="leaderboardView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl font-bold tracking-tight mb-8">LEADERBOARD</h1>
+
+        <div class="bg-white border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] overflow-x-auto mb-8">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr class="border-b-2 border-black">
+                        <th class="px-4 py-3 text-left font-bold">RANK</th>
+                        <th class="px-4 py-3 text-left font-bold">BETTOR</th>
+                        <th class="px-4 py-3 text-left font-bold">BANKROLL ↓</th>
+                        <th class="px-4 py-3 text-left font-bold">PROFIT</th>
+                        <th class="px-4 py-3 text-left font-bold">ROI %</th>
+                        <th class="px-4 py-3 text-left font-bold">WIN RATE</th>
+                        <th class="px-4 py-3 text-left font-bold">TOTAL BETS</th>
+                        <th class="px-4 py-3 text-left font-bold">AVG ODDS</th>
+                        <th class="px-4 py-3 text-left font-bold">BIGGEST WIN</th>
+                        <th class="px-4 py-3 text-left font-bold">SPORT</th>
+                    </tr>
+                </thead>
+                <tbody class="font-mono">
+                    <tr class="border-b border-black hover:bg-[#F5F1E8] transition-colors">
+                        <td class="px-4 py-4">1</td>
+                        <td class="px-4 py-4">
+                            <span class="font-bold">PARLAYKING</span>
+                        </td>
+                        <td class="px-4 py-4 font-bold">$42,850</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+$32,850</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+328.5%</td>
+                        <td class="px-4 py-4">68.3%</td>
+                        <td class="px-4 py-4">234</td>
+                        <td class="px-4 py-4">+425</td>
+                        <td class="px-4 py-4 text-green-500">$18,400</td>
+                        <td class="px-4 py-4">NFL</td>
+                    </tr>
+                    <tr class="border-b border-black hover:bg-[#F5F1E8] transition-colors">
+                        <td class="px-4 py-4">2</td>
+                        <td class="px-4 py-4">
+                            <span class="font-bold">SHARPSHOOTER</span>
+                        </td>
+                        <td class="px-4 py-4 font-bold">$38,240</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+$28,240</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+282.4%</td>
+                        <td class="px-4 py-4">71.2%</td>
+                        <td class="px-4 py-4">412</td>
+                        <td class="px-4 py-4">-118</td>
+                        <td class="px-4 py-4 text-green-500">$5,600</td>
+                        <td class="px-4 py-4">NBA</td>
+                    </tr>
+                    <tr class="border-b border-black hover:bg-[#F5F1E8] transition-colors">
+                        <td class="px-4 py-4">3</td>
+                        <td class="px-4 py-4">
+                            <span class="font-bold">BETMASTER</span>
+                        </td>
+                        <td class="px-4 py-4 font-bold">$24,850</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+$14,850</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+148.5%</td>
+                        <td class="px-4 py-4">64.2%</td>
+                        <td class="px-4 py-4">387</td>
+                        <td class="px-4 py-4">+285</td>
+                        <td class="px-4 py-4 text-green-500">$12,450</td>
+                        <td class="px-4 py-4">MLB</td>
+                    </tr>
+                    <tr class="border-b border-black hover:bg-[#F5F1E8] transition-colors">
+                        <td class="px-4 py-4">4</td>
+                        <td class="px-4 py-4">
+                            <span class="font-bold">ODDSWIZARD</span>
+                        </td>
+                        <td class="px-4 py-4 font-bold">$21,120</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+$11,120</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+111.2%</td>
+                        <td class="px-4 py-4">59.8%</td>
+                        <td class="px-4 py-4">521</td>
+                        <td class="px-4 py-4">-105</td>
+                        <td class="px-4 py-4 text-green-500">$8,200</td>
+                        <td class="px-4 py-4">SOCCER</td>
+                    </tr>
+                    <tr class="hover:bg-[#F5F1E8] transition-colors">
+                        <td class="px-4 py-4">5</td>
+                        <td class="px-4 py-4">
+                            <span class="font-bold">UNDERDOG</span>
+                        </td>
+                        <td class="px-4 py-4 font-bold">$18,940</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+$8,940</td>
+                        <td class="px-4 py-4 font-bold text-green-500">+89.4%</td>
+                        <td class="px-4 py-4">56.3%</td>
+                        <td class="px-4 py-4">298</td>
+                        <td class="px-4 py-4">+195</td>
+                        <td class="px-4 py-4 text-green-500">$6,780</td>
+                        <td class="px-4 py-4">NHL</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Bettor Card and Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Top Bettor Card -->
+            <div class="bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <h3 class="text-lg font-bold mb-4 tracking-tight">TOP BETTOR</h3>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-[#FFE600] border-2 border-black flex items-center justify-center">
+                        <span class="text-2xl font-bold">1</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">PARLAYKING</div>
+                    </div>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <div class="text-gray-600 mb-1">TOTAL BANKROLL</div>
+                        <div class="text-2xl font-bold">$42,850</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-600 mb-1">PROFIT</div>
+                        <div class="text-xl font-bold text-green-500">+$32,850</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-600 mb-1">ROI</div>
+                        <div class="text-xl font-bold text-green-500">+328.5%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="lg:col-span-2 bg-white border-2 border-black p-6 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                <div style="position: relative; height: 280px;">
+                    <canvas id="leaderboardChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PARLAY BUILDER VIEW -->
+    <main id="parlayView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-3xl font-bold tracking-tight mb-8">PARLAY BUILDER</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Available Games -->
+            <div class="lg:col-span-2 space-y-4">
+                <h2 class="text-xl font-bold tracking-tight">AVAILABLE GAMES</h2>
+
+                <!-- Game 1 -->
+                <div class="bg-white border-2 border-black p-4 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="inline-block px-3 py-1 bg-[#10B981] border-2 border-black">
+                            <span class="text-xs font-bold text-white">NFL</span>
+                        </div>
+                        <div class="text-xs font-bold text-gray-600">TODAY 1:00 PM</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">CHIEFS -3.5</div>
+                            <div class="text-xs text-gray-600">-110</div>
+                        </button>
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">OVER 48.5</div>
+                            <div class="text-xs text-gray-600">-115</div>
+                        </button>
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">RAIDERS +3.5</div>
+                            <div class="text-xs text-gray-600">-110</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game 2 -->
+                <div class="bg-white border-2 border-black p-4 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="inline-block px-3 py-1 bg-[#FF6B6B] border-2 border-black">
+                            <span class="text-xs font-bold text-white">NBA</span>
+                        </div>
+                        <div class="text-xs font-bold text-gray-600">TODAY 7:30 PM</div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">LAKERS ML</div>
+                            <div class="text-xs text-gray-600">+145</div>
+                        </button>
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">OVER 225.5</div>
+                            <div class="text-xs text-gray-600">-110</div>
+                        </button>
+                        <button class="p-3 border-2 border-black hover:bg-[#F5F1E8] transition-colors">
+                            <div class="text-sm font-bold mb-1">WARRIORS -3</div>
+                            <div class="text-xs text-gray-600">-165</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bet Slip -->
+            <div>
+                <h2 class="text-xl font-bold tracking-tight mb-4">BET SLIP</h2>
+                <div class="bg-white border-2 border-black p-4 shadow-[6px_6px_0_0_rgba(0,0,0,1)]">
+                    <div class="mb-4">
+                        <div class="text-xs font-bold text-gray-600 mb-2">SELECTED LEGS: 0</div>
+                        <div class="text-sm text-gray-600">Add picks to build your parlay</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-xs font-bold text-gray-600 mb-2 block">WAGER AMOUNT</label>
+                        <input type="number" value="50" class="w-full px-3 py-2 border-2 border-black font-bold text-lg">
+                    </div>
+
+                    <div class="mb-4 pb-4 border-b-2 border-gray-200">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-xs font-bold text-gray-600">TOTAL ODDS:</span>
+                            <span class="text-sm font-bold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-xs font-bold text-gray-600">TO WIN:</span>
+                            <span class="text-lg font-bold text-green-500">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button disabled class="w-full px-4 py-3 bg-gray-300 text-gray-600 font-bold border-2 border-black text-sm">
+                        PLACE BET
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // View switching
+        function showView(view) {
+            const liveView = document.getElementById('liveView');
+            const leaderboardView = document.getElementById('leaderboardView');
+            const parlayView = document.getElementById('parlayView');
+
+            if (view === 'live') {
+                liveView.classList.remove('hidden');
+                leaderboardView.classList.add('hidden');
+                parlayView.classList.add('hidden');
+            } else if (view === 'leaderboard') {
+                liveView.classList.add('hidden');
+                leaderboardView.classList.remove('hidden');
+                parlayView.classList.add('hidden');
+                setTimeout(() => {
+                    initLeaderboardChart();
+                }, 100);
+            } else if (view === 'parlay') {
+                liveView.classList.add('hidden');
+                leaderboardView.classList.add('hidden');
+                parlayView.classList.remove('hidden');
+            }
+        }
+
+        // Sports dropdown hover functions
+        function showSportsDropdown() {
+            const dropdown = document.getElementById('sportsDropdown');
+            dropdown.classList.remove('hidden');
+        }
+
+        function hideSportsDropdown() {
+            const dropdown = document.getElementById('sportsDropdown');
+            dropdown.classList.add('hidden');
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Bankroll Chart
+        const ctx = document.getElementById('bankrollChart').getContext('2d');
+        const bankrollChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Oct 17', 'Oct 19', 'Oct 22', 'Oct 24', 'Oct 26', 'Oct 29', 'Oct 31', 'Nov 02'],
+                datasets: [
+                    {
+                        label: 'BANKROLL',
+                        data: [10000, 11200, 14500, 18200, 22800, 21900, 23400, 24850],
+                        borderColor: '#4DA6FF',
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        tension: 0.2,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        borderColor: '#000',
+                        borderWidth: 2,
+                        titleFont: {
+                            family: 'Space Mono',
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            family: 'Space Mono'
+                        },
+                        padding: 12
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#E5E5E5',
+                            lineWidth: 2
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Space Mono',
+                                size: 10,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#E5E5E5',
+                            lineWidth: 2
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Space Mono',
+                                size: 10,
+                                weight: 'bold'
+                            },
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Leaderboard Chart
+        let leaderboardChart;
+
+        function initLeaderboardChart() {
+            if (!leaderboardChart) {
+                const ctxLeaderboard = document.getElementById('leaderboardChart').getContext('2d');
+                leaderboardChart = new Chart(ctxLeaderboard, {
+                    type: 'bar',
+                    data: {
+                        labels: ['PARLAYKING', 'SHARPSHOOTER', 'BETMASTER', 'ODDSWIZARD', 'UNDERDOG'],
+                        datasets: [{
+                            data: [42850, 38240, 24850, 21120, 18940],
+                            backgroundColor: ['#FFE600', '#4DA6FF', '#10B981', '#F59E0B', '#9B59B6'],
+                            borderColor: '#000',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: '#000',
+                                borderColor: '#000',
+                                borderWidth: 2,
+                                titleFont: {
+                                    family: 'Space Mono',
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    family: 'Space Mono'
+                                },
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return '$' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'Space Mono',
+                                        size: 9,
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: '#E5E5E5',
+                                    lineWidth: 2
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'Space Mono',
+                                        size: 10,
+                                        weight: 'bold'
+                                    },
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
